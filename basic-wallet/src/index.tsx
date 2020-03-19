@@ -26,6 +26,8 @@ const exchange = new Exchange({
   pairs: [new XDaiBridge(), new Uniswap('dai')],
 });
 
+
+
 const BurnerWallet = () =>
   <ModernUI
     core={core}
