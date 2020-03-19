@@ -1,3 +1,11 @@
+# CTC Development Instructions:
+Run, in the root directory,
+- `yarn`
+- `yarn run build`
+- `yarn start-basic`
+
+Then a tab should pop up in your browser with the Dollar For Everyone application!
+
 ## Burner Wallet 2.0
 
 The Burner Wallet 2.0 is a modular, extendable and customizable web application for seamless crypto payments.

@@ -14,6 +14,7 @@
     "@burner-wallet/core": "^1.0.0",
     "@burner-wallet/types": "^1.0.0",
     "file-loader": "^5.0.2",
+    "gensync": "^1.0.0-beta.1",
     "worker-loader": "^2.0.0"
   },
   "devDependencies": {
