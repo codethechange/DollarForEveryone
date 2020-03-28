@@ -7,21 +7,22 @@ nacl.util = require('tweetnacl-util')
 const sha256 = require('crypto-js/sha256')
 const axios = require('axios')
 const { v4: uuidv4 } = require('uuid');
-const BRIGHTID_NODE_URL = process.env.PUBLIC_URL
 
+// TODO: Setup password for database
 mongoose.connect('mongodb://localhost/d4e', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
 
-const Schema = mongoose.Schema
 const CONTEXT = 'DollarForEveryone'
+const BRIGHTID_NODE_DOMAIN = process.env.BRIGHTID_NODE_DOMAIN
+const BRIGHTID_NODE_URL = BRIGHTID_NODE_DOMAIN + '/brightid/v4'
 
-const userSchema = new Schema({
-  id: String,
+const userSchema = new mongoose.Schema({
+  contextId: String,
   verified: Boolean,
   creationDate: Date,
-  verificationDate: Date,
+  receivedDate: Date,
   address: String
 })
 
@@ -43,7 +44,6 @@ function hash (data: string)  {
   return b64ToUrlSafeB64(b);
 };
 
-
 const User = mongoose.model('User', userSchema)
 
 /**
@@ -55,7 +55,7 @@ app.post('/deep-link/:address', (req, res) => {
   // TODO: Check if there are many unclaimed uuids
   const contextId = uuidv4()
   const user = new User({ 
-    id: uuid, verified: false, 
+    contextId, verified: false, 
     creationDate: Date.now(), address: req.query.address
   })
 
@@ -79,7 +79,7 @@ app.post('/deep-link/:address', (req, res) => {
           res.status(500).send('Server Error')
         } else {
           const deepLink = 'brightid://link-verification/' +
-            BRIGHTID_NODE_URL + '/DollarForEveryone/' + contextId
+            BRIGHTID_NODE_DOMAIN + '/DollarForEveryone/' + contextId
           res.send(deepLink)
         }
       })
@@ -91,6 +91,35 @@ app.post('/deep-link/:address', (req, res) => {
  * Check if verified: Determine if a user's uuid has been verified to a receive a dollar
  * TODO Check user id database 
  */
-app.get('/verified/:uuid', (req, res) => { res.send('Hello world!') })
+app.post('/receive-dollar/:address', (req, res) => { 
+  const address = req.params.address
+  User.findOne({ address, verified: false }, (err, user) => {
+    if (err || !user) {
+      res.status(500).send('Server Error')
+      return
+    }
+    // They have not been verified yet!
+    // Check if the contextId has been verified
+    axios.get(BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + res.contextId)
+    .then(response => {
+      if (response.error) {
+        res.status(response.code).send(response.errorMessage)
+        return
+      }      
+      // The context id has newly been verified!
+      user.verified = true
+      user.save().then((err) => {
+        if (err) {
+          res.status(500).send('Server Error')
+          return
+        }
+        // Send dollar
+        res.send('Success')
+      })
+    })
+  })
+})
+
+c
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
