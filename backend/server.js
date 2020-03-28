@@ -113,7 +113,7 @@ app.post('/receive-dollar/:address', (req, res) => {
           res.status(500).send('Server Error')
           return
         }
-        // Send dollar
+        // TODO: Send dollar
         res.send('Success')
       })
     })
