@@ -1,4 +1,16 @@
 # CTC Development Instructions:
+
+## Setup MongoDB
+
+If it is your first time running the database:
+- Create a `~/data/db` directory 
+- Run `mongod --dbpath ~/data/db`
+- In a new terminal tab, run `mongo`
+- Within the mongo shell, type `use d4e` to create the db
+
+Otherwise:
+- Run `mongod --dbpath ~/data/db`
+
 Run, in the root directory,
 - `yarn`
 - `yarn run build`
