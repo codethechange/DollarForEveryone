@@ -11,12 +11,11 @@ function Splash() {
     if (uID !== localStorage.getItem(UID)) {
         localStorage.setItem(UID, uID)
     }
-  
+
     return (
         <>
-            
             {uID }
-            <a href="brightid://link-verification/<node_url>/<context>/<context_id>"> BrightID Deep Link</a>
+            <a href="brightid://link-verification/http:%2f%2ftest.brightid.org/DollarForEveryone/4902ea59-5f88-4a73-8aac-047684e479cf"> BrightID Deep Link</a>
         </>
     
     );
