@@ -57,7 +57,6 @@ app.post('/deep-link/:address', (req, res) => {
   // If user already assigned with address, then don't bother
   User.findOne({address: req.params.address}, (err, user) => {
     if (user) {
-      console.log('USER' + user)
       const deepLink = 'brightid://link-verification/' +
         BRIGHTID_NODE_DOMAIN + '/DollarForEveryone/' + user.contextId
       res.send(deepLink)
@@ -80,7 +79,7 @@ app.post('/deep-link/:address', (req, res) => {
   })
 })
 
-const sponsorUser = (contextId) => {
+const sponsorUser = async (contextId) => {
   const message = 'Sponsor' + ',' + CONTEXT + ',' + contextId
   const msgHash = hash(message)
   console.log(process.env.CONTEXT_PK)
@@ -90,8 +89,10 @@ const sponsorUser = (contextId) => {
   if (!nacl.sign.detached.verify(
     nacl.util.decodeUTF8(message), nacl.util.decodeBase64(sig), nacl.util.decodeBase64(process.env.CONTEXT_PK)
     )) {
-    throw 'GAHHH' // Works!! yay!
+    throw 'Invalid .env Signature Configuration'
   }
+  /*
+    Here are some console logs if the sponsor endpoint isn't working.
   console.log({
     context: CONTEXT,
     contextId,
@@ -100,32 +101,23 @@ const sponsorUser = (contextId) => {
     sig
   })
   console.log(BRIGHTID_NODE_URL + '/operations/' + msgHash)
+  */
 
-  axios.put(BRIGHTID_NODE_URL + '/operations/' + msgHash, {
+  const response = await axios.put(BRIGHTID_NODE_URL + '/operations/' + msgHash, {
     context: CONTEXT,
     contextId,
     name: 'Sponsor',
     v: 4,
     sig
-  }).then(response => {
-    if (response.error) {
-      // TODO: handle different error messages
-      throw response.errorMessage
-    } else {
-      user.save((err) => {
-        if (err) {
-          throw 'Save Error'
-        } else {
-          const deepLink = 'brightid://link-verification/' +
-            BRIGHTID_NODE_DOMAIN + '/DollarForEveryone/' + contextId
-          res.send(deepLink)
-        }
-      })
-    }
   })
-  .catch(response => {
-    res.send(response.toJSON())
-  })
+
+  if (response.error) {
+    // TODO: handle different error messages
+    throw response.errorMessage
+  } else {
+    user.verified = true
+    return user.save().exec()
+  }
 }
 
 
@@ -137,43 +129,36 @@ const sendDollar = (address) => {
  * Check if verified: Determine if a user's uuid has been verified to a receive a dollar
  * TODO Check user id database 
  */
-app.post('/receive-dollar/:address', (req, res) => { 
+app.post('/receive-dollar/:address', async (req, res) => { 
   const address = req.params.address
-  User.findOne({ address, verified: false }, (err, user) => {
-    if (err || !user) {
-      res.status(500).send('Server Error')
-      return
-    }
+  const user = await User.findOne({ address })
+  if (!user.verified) {
     // They have not been verified yet!
     // Check if the contextId has been verified
-    axios.get(BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId)
-    .then(response => {
-      if (response.error) {
-        res.status(response.code).send(response.errorMessage)
-        return
+    const response = await axios.get(
+      BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId
+    )
+    if (response.error) throw response.errorMessage
+    const data = response.data.data
+    if (data.errorMessage) { // TODO: should errorMessage be in the data field?
+      if (data.errorMessage === 'user is not sponsored') {
+        sponsorUser();
+        res.send('Here is another user')
+      } else {
+        throw data.errorMessage
       }
-      if (response.data) {
-        const data = response.data
-        if (data.errorMessage) {
-          if (data.errorMessage === 'user is not sponsored') {
-            sponsorUser();
-          }
-        } else {
-          // The context id has newly been verified!
-          user.verified = true
-          user.save().then((err) => {
-            if (err) {
-              res.status(500).send('Server Error')
-              return
-            }
-            // TODO: Send dollar
-            sendDollar(address)
-            res.send('Success')
-          })
-        } 
-      }      
-    })
-  })
+    } else if (data.unique) { // The user is deemed unique by BrightID
+      // The context id has newly been verified!
+      user.verified = true
+      await user.save().exec()
+      sendDollar(address)
+      res.send('Success')
+    } else {
+      throw 'Sponsored but not unique'
+    }
+  } else {
+    throw 'Already received a dollar.'
+  } 
 })
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
