@@ -46,6 +46,15 @@ function hash (data)  {
   return b64ToUrlSafeB64(b);
 };
 
+function uInt8ArrayToB64(array) {
+  const b = Buffer.from(array);
+  return b.toString('base64');
+}
+
+function strToUint8Array(str) {
+  return new Uint8Array(Buffer.from(str, 'ascii'));
+}
+
 const User = mongoose.model('User', userSchema)
 
 /**
@@ -91,17 +100,6 @@ const sponsorUser = async (contextId) => {
     )) {
     throw 'Invalid .env Signature Configuration'
   }
-  /*
-    Here are some console logs if the sponsor endpoint isn't working.
-  console.log({
-    context: CONTEXT,
-    contextId,
-    name: 'Sponsor',
-    v: 4,
-    sig
-  })
-  console.log(BRIGHTID_NODE_URL + '/operations/' + msgHash)
-  */
 
   const response = await axios.put(BRIGHTID_NODE_URL + '/operations/' + msgHash, {
     context: CONTEXT,
@@ -142,7 +140,7 @@ app.post('/receive-dollar/:address', async (req, res) => {
     const data = response.data.data
     if (data.errorMessage) { // TODO: should errorMessage be in the data field?
       if (data.errorMessage === 'user is not sponsored') {
-        sponsorUser();
+        sponsorUser(user.contextId);    
         res.send('Here is another user')
       } else {
         throw data.errorMessage

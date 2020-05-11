@@ -15,7 +15,7 @@ function Splash() {
     return (
         <>
             {uID }
-            <a href="brightid://link-verification/http:%2f%2ftest.brightid.org/DollarForEveryone/4902ea59-5f88-4a73-8aac-047684e479cf"> BrightID Deep Link</a>
+            <a href="brightid://link-verification/http:%2f%2ftest.brightid.org/DollarForEveryone/95a13cc6-878b-4574-b91e-768216751d53"> BrightID Deep Link</a>
         </>
     
     );
