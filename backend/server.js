@@ -7,8 +7,27 @@ const nacl = require('tweetnacl')
 nacl.util = require('tweetnacl-util')
 const sha256 = require('crypto-js/sha256')
 const axios = require('axios')
+const Web3 = require('web3')
+
 const { v4: uuidv4 } = require('uuid');
 const CryptoJS = require('crypto-js')
+
+const Tx = require('ethereumjs-tx');
+
+// TODO: Change provider to main net.
+const web3 = new Web3(process.env.WEB3_PROVIDER_URI);
+
+web3.eth.defaultAccount = process.env.ETH_ADDRESS
+
+/**
+ * On startup, print balance on account as a sanity check for ETH config.
+ */
+const printBalance = async () => {
+  const myBalanceWei = await web3.eth.getBalance(web3.eth.defaultAccount)
+  const myBalance = web3.utils.fromWei(myBalanceWei, 'ether')
+  console.log(`Your wallet balance is currently ${myBalance} ETH`)
+}
+
 
 // TODO: Setup password for database
 mongoose.connect('mongodb://localhost/d4e', {
@@ -45,15 +64,6 @@ function hash (data)  {
   const b = h.toString(CryptoJS.enc.Base64);
   return b64ToUrlSafeB64(b);
 };
-
-function uInt8ArrayToB64(array) {
-  const b = Buffer.from(array);
-  return b.toString('base64');
-}
-
-function strToUint8Array(str) {
-  return new Uint8Array(Buffer.from(str, 'ascii'));
-}
 
 const User = mongoose.model('User', userSchema)
 
@@ -119,8 +129,22 @@ const sponsorUser = async (contextId) => {
 }
 
 
-const sendDollar = (address) => {
-  // TODO: send dollar to address, update receivedDate()
+const sendDollar = async (address) => {
+  const txConfig = {
+    to: address,
+    value: web3.util.toHex(web3.util.toWei(.001, )), //TODO: get conversion from Eth to XDAI
+    gas: 21000,
+    gasPrice: 100000000,
+    nonce: await web3.eth.getTransactionCount(web3.eth.defaultAccount),
+    chainID: 1337 // ganache chain id
+  }
+  const transaction = new EthereumTx(txConfig)
+  transaction.sign( Buffer.from(process.env.WALLET_PRIVATE_KEY, 'hex') )
+  const serializedTransaction = transaction.serialize()
+  const transactionId = web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex') )
+
+
+  // TODO: Send dollar
 }
 
 /**
@@ -149,7 +173,7 @@ app.post('/receive-dollar/:address', async (req, res) => {
       // The context id has newly been verified!
       user.verified = true
       await user.save().exec()
-      sendDollar(address)
+      await sendDollar(address)
       res.send('Success')
     } else {
       throw 'Sponsored but not unique'
@@ -159,4 +183,6 @@ app.post('/receive-dollar/:address', async (req, res) => {
   } 
 })
 
+
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+printBalance()
