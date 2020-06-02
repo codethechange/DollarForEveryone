@@ -1,24 +1,55 @@
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import './splash.css';
+import 
 
-const UID = 'uID'
-const NODE_URL = ''
 const CONTEXT='dollarforeveryone'
+const PACKAGE_URL = './assets/Present.svg'
 
-function Splash() {
-    
-    const uID: string = localStorage.getItem(UID) || uuidv4()
-    if (uID !== localStorage.getItem(UID)) {
-        localStorage.setItem(UID, uID)
+class Title extends React.Component {
+    render() {
+      return <h2 className = "title">DollarForEveryone</h2>;
     }
+}
 
-    return (
-        <>
-            {uID }
-            <a href="brightid://link-verification/http:%2f%2ftest.brightid.org/DollarForEveryone/95a13cc6-878b-4574-b91e-768216751d53"> BrightID Deep Link</a>
-        </>
-    
-    );
-  }
+class BeingYou extends React.Component {
+    render () {
+        return <h3 className = "being_you">$1 for Being You</h3>;
+    }
+}
 
-export default Splash
+//links to BrightId app
+class Verify extends React.Component {
+    render () {
+        return (
+            <button 
+              className="button" 
+            >
+                Verify with BrightID
+            </button>
+          );
+    }
+}
+
+class Present extends React.Component {
+    render () {
+        return (
+            <img src = {PACKAGE_URL}/> 
+          );
+    }
+}
+
+class Splash extends React.Component {
+    render() {
+      return (
+        <div>
+            <Title />
+            <BeingYou />
+            <Present />
+            <Verify />
+        </div>
+        )
+    }
+}
+
+export default Splash //when someone imports file, they import Splash function

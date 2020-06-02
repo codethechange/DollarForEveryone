@@ -1,0 +1,86 @@
+/* Rectangle 1 
+background: #323232;
+*/
+
+/* DollarForEveryone */
+.title{
+font-family: Comfortaa;
+font-style: normal;
+font-weight: normal;
+font-size: 32px;
+line-height: 36px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Group 2 
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+*/
+
+/* $1 for Being You */
+.being_you{
+font-family: Comfortaa;
+font-style: normal;
+font-weight: normal;
+font-size: 24px;
+line-height: 27px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #000000;
+
+text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.button {
+background: #000000;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+border-radius: 20px; 
+}
+
+/* use flex! center horizontally */
+.button{
+font-family: Comfortaa;
+font-style: normal;
+font-weight: normal;
+font-size: 26px;
+line-height: 29px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+}
+
+/* Description */
+/*
+font-family: Comfortaa;
+font-style: normal;
+font-weight: normal;
+font-size: 24px;
+line-height: 27px;
+text-align: center;
+
+color: #000000;
+
+text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
+
+
+/* Present */
+
+/* 
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
+
+
+/* Envelope */
+/* 
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */ 
