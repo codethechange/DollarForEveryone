@@ -1,10 +1,10 @@
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import './splash.css';
-import 
+import PRESENT_IMAGE from './assets/Present.svg'
 
 const CONTEXT='dollarforeveryone'
-const PACKAGE_URL = './assets/Present.svg'
+
 
 class Title extends React.Component {
     render() {
@@ -34,7 +34,7 @@ class Verify extends React.Component {
 class Present extends React.Component {
     render () {
         return (
-            <img src = {PACKAGE_URL}/> 
+            <img src = {PRESENT_IMAGE}/> 
           );
     }
 }
