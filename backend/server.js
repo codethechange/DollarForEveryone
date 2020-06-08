@@ -150,7 +150,6 @@ app.post('/receive-dollar/:address', async (req, res, next) => {
     // They have not been verified yet!
     // Check if the contextId has been verified
     try {
-      throw Error('Sponsored but not unique')
       const response = await axios.get(
         BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId
       )  
@@ -171,7 +170,7 @@ app.post('/receive-dollar/:address', async (req, res, next) => {
 
     } catch(error) {
       const data = error.response.data
-      const errorMsg = errorMessage
+      const errorMsg = data.errorMessage
       if (errorMsg === 'contextId not found' ||
           errorMsg === 'user can not be verified for this context') {
         res.send(data)
@@ -185,7 +184,11 @@ app.post('/receive-dollar/:address', async (req, res, next) => {
     }
       
     } else {
-      throw 'Already received a dollar.'
+      res.send({
+        code: 400,
+        error: true,
+        errorMessage: 'Already received dollar.'
+      })
     } 
   
 })
