@@ -12,7 +12,7 @@ const Web3 = require('web3')
 const { v4: uuidv4 } = require('uuid');
 const CryptoJS = require('crypto-js')
 
-const Tx = require('ethereumjs-tx');
+const EthereumTx = require('ethereumjs-tx');
 
 // TODO: Change provider to main net.
 const web3 = new Web3(process.env.WEB3_PROVIDER_URI);
