@@ -24,10 +24,9 @@ web3.eth.defaultAccount = process.env.ETH_ADDRESS
  */
 const printBalance = async () => {
   const myBalanceWei = await web3.eth.getBalance(web3.eth.defaultAccount)
-  const myBalance = web3.utils.fromWei(myBalanceWei, 'ether')
-  console.log(`Your wallet balance is currently ${myBalance} ETH`)
+  const myBalance = web3.utils.fromWei(myBalanceWei, 'ether') // 'ether' is just the chain token.
+  console.log(`Your wallet balance is currently ${myBalance} XDai`)
 }
-
 
 // TODO: Setup password for database
 mongoose.connect('mongodb://localhost/d4e', {
@@ -72,7 +71,7 @@ const User = mongoose.model('User', userSchema)
  * for your crypto wallet address
  * @param address your wallet address
  */
-app.post('/deep-link/:address', (req, res) => {
+app.post('/deep-link/:address',async (req, res) => {
   // If user already assigned with address, then don't bother
   User.findOne({address: req.params.address}, (err, user) => {
     if (user) {
@@ -151,38 +150,49 @@ const sendDollar = async (address) => {
  * Check if verified: Determine if a user's uuid has been verified to a receive a dollar
  * TODO Check user id database 
  */
-app.post('/receive-dollar/:address', async (req, res) => { 
+app.post('/receive-dollar/:address', async (req, res, next) => { 
+  
   const address = req.params.address
   const user = await User.findOne({ address })
   if (!user.verified) {
     // They have not been verified yet!
     // Check if the contextId has been verified
-    const response = await axios.get(
-      BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId
-    )
-    if (response.error) throw response.errorMessage
-    const data = response.data.data
-    if (data.errorMessage) { // TODO: should errorMessage be in the data field?
-      if (data.errorMessage === 'user is not sponsored') {
-        sponsorUser(user.contextId);    
-        res.send('Here is another user')
+    try {
+      const response = await axios.get(
+        BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId
+      )  
+      if (response.error) throw response.errorMessage
+
+      const data = response.data.data
+      if (data.errorMessage) { // TODO: should errorMessage be in the data field?
+        if (data.errorMessage === 'user is not sponsored') {
+          sponsorUser(user.contextId);    
+          res.send('Here is another user')
+        } else {
+          throw data.errorMessage
+        }
+      } else if (data.unique) { // The user is deemed unique by BrightID
+        // The context id has newly been verified!
+        user.verified = true
+        await user.save().exec()
+        await sendDollar(address)
+        res.send('Success')
       } else {
-        throw data.errorMessage
+        throw 'Sponsored but not unique'
       }
-    } else if (data.unique) { // The user is deemed unique by BrightID
-      // The context id has newly been verified!
-      user.verified = true
-      await user.save().exec()
-      await sendDollar(address)
-      res.send('Success')
-    } else {
-      throw 'Sponsored but not unique'
+
+    } catch(error) {
+      next(error)
     }
-  } else {
-    throw 'Already received a dollar.'
-  } 
+      
+    } else {
+      throw 'Already received a dollar.'
+    } 
+  
 })
 
 
-app.listen(port, () => console.log(`Example app listening on port ${port}!`))
-printBalance()
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}!`)
+  printBalance()
+})
