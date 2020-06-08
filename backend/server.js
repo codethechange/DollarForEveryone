@@ -20,7 +20,7 @@ const web3 = new Web3(process.env.WEB3_PROVIDER_URI);
 web3.eth.defaultAccount = process.env.ETH_ADDRESS
 
 /**
- * On startup, print balance on account as a sanity check for ETH config.
+ * On startup, print balance on account as a sanity check for Chain config.
  */
 const printBalance = async () => {
   const myBalanceWei = await web3.eth.getBalance(web3.eth.defaultAccount)
@@ -110,21 +110,13 @@ const sponsorUser = async (contextId) => {
     throw 'Invalid .env Signature Configuration'
   }
 
-  const response = await axios.put(BRIGHTID_NODE_URL + '/operations/' + msgHash, {
+  const response = axios.put(BRIGHTID_NODE_URL + '/operations/' + msgHash, {
     context: CONTEXT,
     contextId,
     name: 'Sponsor',
     v: 4,
     sig
   })
-
-  if (response.error) {
-    // TODO: handle different error messages
-    throw response.errorMessage
-  } else {
-    user.verified = true
-    return user.save().exec()
-  }
 }
 
 
@@ -158,31 +150,38 @@ app.post('/receive-dollar/:address', async (req, res, next) => {
     // They have not been verified yet!
     // Check if the contextId has been verified
     try {
+      throw Error('Sponsored but not unique')
       const response = await axios.get(
         BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId
       )  
-      if (response.error) throw response.errorMessage
-
       const data = response.data.data
-      if (data.errorMessage) { // TODO: should errorMessage be in the data field?
-        if (data.errorMessage === 'user is not sponsored') {
-          sponsorUser(user.contextId);    
-          res.send('Here is another user')
-        } else {
-          throw data.errorMessage
-        }
-      } else if (data.unique) { // The user is deemed unique by BrightID
+      if (data.unique) { // The user is deemed unique by BrightID
         // The context id has newly been verified!
         user.verified = true
         await user.save().exec()
         await sendDollar(address)
         res.send('Success')
       } else {
-        throw 'Sponsored but not unique'
+        res.send({
+          code: 406,
+          error: true,
+          errorMessage: 'user is not verified'
+        })
       }
 
     } catch(error) {
-      next(error)
+      const data = error.response.data
+      const errorMsg = errorMessage
+      if (errorMsg === 'contextId not found' ||
+          errorMsg === 'user can not be verified for this context') {
+        res.send(data)
+      } else if (errorMsg === 'user is not sponsored') {
+        sponsorUser(user.contextId);
+        res.send(data)
+      } else {
+        // Uncaught error: pass it to Express middleware.
+        next(error)
+      }
     }
       
     } else {
