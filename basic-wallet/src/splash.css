@@ -16,11 +16,14 @@ text-align: center;
 color: #000000;
 
 text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+justify-content: center;
 }
 
-/* Group 2 
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-*/
+.sun{
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    display: flex;
+    justify-content: center;
+}
 
 /* $1 for Being You */
 .being_you{
@@ -36,16 +39,20 @@ text-align: center;
 color: #000000;
 
 text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+display: flex;
+justify-content: center;
 }
 
-.button {
+.button{
+ 
+display: flex;
+justify-content: center;
+}
+
+.button{
 background: #000000;
 box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-border-radius: 20px; 
-}
-
-/* use flex! center horizontally */
-.button{
+border-radius: 20px;
 font-family: Comfortaa;
 font-style: normal;
 font-weight: normal;
@@ -58,29 +65,33 @@ text-align: center;
 color: #FFFFFF;
 
 text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-
+display: flex;
+justify-content: center;
 }
 
-/* Description */
-/*
-font-family: Comfortaa;
-font-style: normal;
-font-weight: normal;
-font-size: 24px;
-line-height: 27px;
-text-align: center;
-
-color: #000000;
-
-text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
-
-
-/* Present */
-
-/* 
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
+.description{
+    font-family: Comfortaa;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 27px;
+    text-align: center;
+    color: #000000;
+    text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin: 20px;
+    padding: 40px;
+}
 
 
-/* Envelope */
-/* 
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */ 
+.present{
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    display: flex;
+    justify-content: center;
+}
+
+
+.envelope{
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); 
+    display: flex;
+    justify-content: center;
+}
