@@ -123,7 +123,7 @@ const sponsorUser = async (contextId) => {
 const sendDollar = async (address) => {
   const txConfig = {
     to: address,
-    value: web3.util.toHex(web3.util.toWei(.001, )), //TODO: get conversion from Eth to XDAI
+    value: web3.util.toHex(web3.util.toWei(1)), 
     gas: 21000,
     gasPrice: 100000000,
     nonce: await web3.eth.getTransactionCount(web3.eth.defaultAccount),
@@ -132,7 +132,7 @@ const sendDollar = async (address) => {
   const transaction = new EthereumTx(txConfig)
   transaction.sign( Buffer.from(process.env.WALLET_PRIVATE_KEY, 'hex') )
   const serializedTransaction = transaction.serialize()
-  const transactionId = web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex') )
+  const transactionId = web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'))
 
 
   // TODO: Send dollar
