@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react'
 
 import * as serviceWorker from './serviceWorker';
-import { xdai, dai, eth } from '@burner-wallet/assets';
+import { xdai, eth } from '@burner-wallet/assets';
 import BurnerCore from '@burner-wallet/core';
 import { InjectedSigner, LocalSigner } from '@burner-wallet/core/signers';
 import { InfuraGateway, InjectedGateway, XDaiGateway, } from '@burner-wallet/core/gateways';
 import Exchange, { Uniswap, XDaiBridge } from '@burner-wallet/exchange';
 import ModernUI from '@burner-wallet/modern-ui';
-import ENSPlugin from '@burner-wallet/ens-plugin';
 import MetamaskPlugin from '@burner-wallet/metamask-plugin';
 import { BurnerConnectPlugin } from '@burner-wallet/burner-connect-wallet';
 import 'worker-loader?name=burnerprovider.js!./burnerconnect'; // eslint-disable-line import/no-webpack-loader-syntax
@@ -22,7 +21,7 @@ const core = new BurnerCore({
       new InfuraGateway(process.env.REACT_APP_INFURA_KEY),
       new XDaiGateway(),
     ],
-    assets: [xdai, dai, eth],
+    assets: [xdai, eth],
 });
   
 const exchange = new Exchange({
@@ -34,7 +33,6 @@ const BurnerWallet = () =>
     core={core}
     plugins={[
     exchange,
-    new ENSPlugin(),
     new MetamaskPlugin(),
     new BurnerConnectPlugin('Basic Wallet'),
     ]}
@@ -46,20 +44,22 @@ const BurnerWallet = () =>
 serviceWorker.unregister();
 
 
-
-
 function App() {
-    const [contextId, setContextId] = useState(localStorage.getItem("contextId"))
+    debugger
+    const [contextId, setContextId] = useState(localStorage.getItem("contextId") || "")
     const [linked, setLinked] = useState(localStorage.getItem("linked"))
     const [verified, setVerified] = useState(localStorage.getItem("verified"))
     
+    // TODO
+    return (<BurnerWallet></BurnerWallet>)
+
     if (!contextId || !linked) {
-        return <Splash></Splash>
+        return (<Splash contextId={contextId}></Splash>)
     }
     if (!verified) {
-        return <NotVerified></NotVerified>
+        return (<NotVerified></NotVerified>)
     }
-    return <BurnerWallet></BurnerWallet>
+    return (<BurnerWallet></BurnerWallet>)
 
 }
 
