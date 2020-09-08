@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 
 import * as serviceWorker from './serviceWorker';
@@ -43,20 +44,32 @@ const BurnerWallet = () =>
 // Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();
 
+enum Status {
+    NOT_LINKED,
+    LINKED,
+    VERIFIED
+}
 
 function App() {
-    debugger
-    const [contextId, setContextId] = useState(localStorage.getItem("contextId") || "")
-    const [linked, setLinked] = useState(localStorage.getItem("linked"))
-    const [verified, setVerified] = useState(localStorage.getItem("verified"))
-    
-    // TODO
-    return (<BurnerWallet></BurnerWallet>)
 
-    if (!contextId || !linked) {
-        return (<Splash contextId={contextId}></Splash>)
+    const [status, setStatus] = useState(Status.NOT_LINKED)
+    const accountAddress = core.getAccounts()[0]
+
+    useEffect(() => {
+        fetch(`/api/status/${accountAddress}`).then(res => res.json())
+        .then(res => {
+            if (res.status === "LINKED") {
+                setStatus(Status.LINKED)
+            } else if (res.status === "VERIFIED") {
+                setStatus(Status.VERIFIED)
+            }
+        })
+    }, [accountAddress])
+
+    if (status === Status.NOT_LINKED) {
+        return (<Splash address={accountAddress}></Splash>)
     }
-    if (!verified) {
+    if (status === Status.LINKED) {
         return (<NotVerified></NotVerified>)
     }
     return (<BurnerWallet></BurnerWallet>)

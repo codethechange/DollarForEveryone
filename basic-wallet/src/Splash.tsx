@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+
 import './splash.css';
 import PRESENT_IMAGE from './assets/Present.svg'
 import ENVELOPE_IMAGE from './assets/Envelope.svg'
@@ -8,15 +8,19 @@ import SUN_IMAGE from './assets/Sun.svg'
 const CONTEXT='dollarforeveryone'
 
 interface Props {
-    contextId: string;
+    address: string;
 }
 
-function Splash({ contextId }: Props) {
-    const [deeplink, setDeeplink] = useState(null)
-    
+function Splash({ address }: Props) {
+    const [deepLink, setDeepLink] = useState("")
     useEffect(() => {
-        fetch(`/api/deep-link?context_id=${contextId}`).then()
-    }, [contextId])
+        fetch(`/deep-link/${address}`, {
+            method: "POST"
+        }).then(res => res.text())
+        .then(res => {            
+            setDeepLink(res)
+        })
+    }, [address])
 
     return (
     <div className="container">
@@ -43,7 +47,7 @@ function Splash({ contextId }: Props) {
         <h2 className = "description">
             Don't have BrightID? Install it on the Play Store/ App Store.
         </h2>
-        <button className="button">Verify with BrightID</button>
+        <button className="button" onClick={() => {window.location.href=deepLink}}>{deepLink ? "Verify with BrightID" : "Loading..."}</button>
     </div>
     )
 }
