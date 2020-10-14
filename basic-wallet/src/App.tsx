@@ -70,7 +70,7 @@ function App() {
         return (<Splash address={accountAddress}></Splash>)
     }
     if (status === Status.LINKED) {
-        return (<NotVerified></NotVerified>)
+        return (<NotVerified accountAddress={accountAddress}></NotVerified>)
     }
     return (<BurnerWallet></BurnerWallet>)
 

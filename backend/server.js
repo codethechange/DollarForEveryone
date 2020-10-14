@@ -76,7 +76,7 @@ app.post('/deep-link/:address',async (req, res) => {
   User.findOne({address: req.params.address}, (err, user) => {
     if (user) {
       const deepLink = 'brightid://link-verification/' +
-        encodeURIComponent(BRIGHTID_NODE_DOMAIN + '/DollarForEveryone/' + user.contextId)
+        encodeURIComponent(BRIGHTID_NODE_DOMAIN) + `/${CONTEXT}/` + user.contextId
       res.send(deepLink)
     } else {
       const contextId = uuidv4()
@@ -114,9 +114,9 @@ app.get("/api/status/:address", async (req, res) => {
             res.send("VERIFIED")
           }
         } catch(error) {
-          if (response.error &&  response.errorNum == 2) { // contextId not found.
+          if (error &&  error.errorNum == 2) { // contextId not found.
             res.send("NOT LINKED")
-          } else if (response.error && response.errorNum in [3,4]) {
+          } else if (error && error.errorNum in [3,4]) {
             res.send("NOT VERIFIED")
           }
         }
