@@ -3,9 +3,6 @@ import React, { useState, useEffect } from 'react';
 import './splash.css';
 import PRESENT_IMAGE from './assets/Present.svg'
 import ENVELOPE_IMAGE from './assets/Envelope.svg'
-import SUN_IMAGE from './assets/Sun.svg'
-
-const CONTEXT='idchain'
 
 interface Props {
     address: string;
@@ -23,19 +20,15 @@ function Splash({ address }: Props) {
     }, [address])
 
     return (
-    <div className="container">
-        <h2 className = "title">DollarForEveryone</h2>
-        <div className = "sun">
-            <img src = {SUN_IMAGE}/>
-        </div>
-        <h2 className = "being_you">$1 for Being You </h2>
-        <div className = "present">
+    <div className="container text">
+        <div className="line">
+            <h2 className = "">$1 for Being You </h2>
             <img src = {PRESENT_IMAGE}/>
         </div>
-        <h2 className = "description">
-            The BrightID/H4H Team wants to give the first 10,000 members $1 each.
-        </h2>
-        <div className = "envelope">
+        <div className="line">
+            <h2>
+                The BrightID/H4H Team wants to give the first 10,000 members $1 each.
+            </h2>
             <img src = {ENVELOPE_IMAGE}/>
         </div>
         <h2 className = "description">

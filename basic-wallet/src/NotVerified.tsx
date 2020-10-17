@@ -17,7 +17,7 @@ function NotVerified ({accountAddress}: Props) {
     // }, [accountAddress])
 
     return (
-        <>
+        <div className="text">
             <h2>You have not been verified yet.</h2>
             <p>
                 To become verified, join a <a href="https://www.brightid.org/meet">verification party.</a>
@@ -25,7 +25,7 @@ function NotVerified ({accountAddress}: Props) {
             <p>
                 Check back here once you receive a "verified" sticker on BrightID.
             </p>
-        </>
+        </div>
     )
 }
 

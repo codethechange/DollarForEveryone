@@ -36,7 +36,7 @@ mongoose.connect('mongodb://localhost/d4e', {
 
 const CONTEXT = 'DollarForEveryone'
 const BRIGHTID_NODE_DOMAIN = process.env.BRIGHTID_NODE_DOMAIN
-const BRIGHTID_NODE_URL = BRIGHTID_NODE_DOMAIN + '/brightid/v4'
+const BRIGHTID_NODE_URL = BRIGHTID_NODE_DOMAIN + '/brightid/v5'
 
 const userSchema = new mongoose.Schema({
   contextId: String,
@@ -97,40 +97,9 @@ app.post('/deep-link/:address',async (req, res) => {
   })
 })
 
-app.get("/api/status/:address", async (req, res) => {
-  User.findOne({address: req.params.address}, async (err, user) => {
-    if (user) {
-      if (user.verified) {
-        res.send("VERIFIED")
-      } else if (user.contextId) {
-        try {
-          const response = await axios.get(
-            BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId
-          ) 
-          if (response.data.unique) { // The user is deemed unique by BrightID
-            // The context id has newly been verified! Let's update our state about this.
-            user.verified = true
-            await user.save().exec()
-            res.send("VERIFIED")
-          }
-        } catch(error) {
-          if (error &&  error.errorNum == 2) { // contextId not found.
-            res.send("NOT LINKED")
-          } else if (error && error.errorNum in [3,4]) {
-            res.send("NOT VERIFIED")
-          }
-        }
-
-      }
-    }
-    res.send("NOT LINKED")
-  })
-})
-
 const sponsorUser = async (contextId) => {
   const message = 'Sponsor' + ',' + CONTEXT + ',' + contextId
   const msgHash = hash(message)
-  console.log(process.env.CONTEXT_PK)
   const sk = nacl.util.decodeBase64(process.env.CONTEXT_SK)
   const sig = nacl.util.encodeBase64(nacl.sign.detached(nacl.util.decodeUTF8(message), sk))
   // Make sure sig works
@@ -139,16 +108,20 @@ const sponsorUser = async (contextId) => {
     )) {
     throw 'Invalid .env Signature Configuration'
   }
-
-  const response = axios.put(BRIGHTID_NODE_URL + '/operations/' + msgHash, {
-    context: CONTEXT,
-    contextId,
-    name: 'Sponsor',
-    v: 4,
-    sig
-  })
+  try {
+    const response = await axios.post(BRIGHTID_NODE_URL + '/operations', {
+      app: CONTEXT,
+      contextId,
+      name: 'Sponsor',
+      sig,
+      v: 5,
+    })
+    console.log(response)
+  } catch(error) {
+    console.log("hi")
+  }
+  
 }
-
 
 const sendDollar = async (address) => {
   const txConfig = {
@@ -160,12 +133,62 @@ const sendDollar = async (address) => {
     chainID: 1337 // ganache chain id
   }
   const transaction = new EthereumTx(txConfig)
-  transaction.sign( Buffer.from(process.env.WALLET_PRIVATE_KEY, 'hex') )
+  transaction.sign(Buffer.from(process.env.WALLET_PRIVATE_KEY, 'hex'))
   const serializedTransaction = transaction.serialize()
   const transactionId = web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'))
 
+  
+  console.log("Sending $1 to" + transactionId)
+  throw  "asdf"
   // TODO: Send dollar
 }
+
+app.get("/api/status/:address", async (req, res) => {
+  User.findOne({address: req.params.address}, async (err, user) => {
+    if (user) {
+      if (user.verified) {
+        res.send({
+          status: "VERIFIED"
+        })
+      } else if (user.contextId) {
+        try {
+          const response = await axios.get(
+            BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId
+          )
+          if (response.data.unique) { // The user is deemed unique by BrightID
+            // The context id has newly been verified! Let's update our state about this.
+            user.verified = true
+            await user.save().exec()
+            await sendDollar()
+            res.send({
+              status: "VERIFIED"
+            })
+          } else {
+            res.send({
+              status: "LINKED"
+            })
+          }
+        } catch(error) {
+          const errorData = error.response.data
+          if (errorData && errorData.errorNum == 2) { // contextId not found.
+            res.send({
+              status:"NOT LINKED"
+            })
+          } else if (errorData && errorData.errorNum == 4) { // linked, but not sponsored
+            await sponsorUser(user.contextId)
+            res.send({
+              status: "LINKED"
+            })
+          } else if (errorData && errorData.errorNum == 3) { // not verified
+            res.send({
+              status:"LINKED"
+            })
+          }
+        }
+      }
+    }
+  })
+})
 
 /**
  * Check if verified: Determine if a user's uuid has been verified to a receive a dollar
@@ -227,3 +250,6 @@ app.listen(port, () => {
   console.log(`Server listening on port ${port}!`)
   printBalance()
 })
+
+
+'child "name" fails because ["name" must be one of [Add Connection]], child "name" fails because ["name" must be one of [Remove Connection]], child "name" fails because ["name" must be one of [Add Group]], child "name" fails because ["name" must be one of [Remove Group]], child "name" fails because ["name" must be one of [Add Membership]], child "name" fails because ["name" must be one of [Remove Membership]], child "name" fails because ["name" must be one of [Set Trusted Connections]], child "name" fails because ["name" must be one of [Set Signing Key]], child "name" fails because ["name" must be one of [Link ContextId]], child "timestamp" fails because ["timestamp" is required], child "name" fails because ["name" must be one of [Invite]], child "name" fails because ["name" must be one of [Dismiss]], child "name" fails because ["name" must be one of [Add Admin]]'

@@ -12,6 +12,8 @@ import MetamaskPlugin from '@burner-wallet/metamask-plugin';
 import { BurnerConnectPlugin } from '@burner-wallet/burner-connect-wallet';
 import 'worker-loader?name=burnerprovider.js!./burnerconnect'; // eslint-disable-line import/no-webpack-loader-syntax
 
+import './App.css';
+import SUN_IMAGE from './assets/Sun.svg'
 import NotVerified from './NotVerified'
 import Splash from './Splash'
 
@@ -53,10 +55,13 @@ enum Status {
 function App() {
 
     const [status, setStatus] = useState(Status.NOT_LINKED)
-    const accountAddress = core.getAccounts()[0]
+    // const accountAddress = core.getAccounts()[0]
+    const accountAddress = "0xEc21870902d3870FAb8157016FAeCF0Da600D599"
 
     useEffect(() => {
-        fetch(`/api/status/${accountAddress}`).then(res => res.json())
+        fetch(`/api/status/${accountAddress}`).then(res => {
+            return res.json()
+        })
         .then(res => {
             if (res.status === "LINKED") {
                 setStatus(Status.LINKED)
@@ -65,14 +70,26 @@ function App() {
             }
         })
     }, [accountAddress])
-
+    let appComponent = (<BurnerWallet></BurnerWallet>)
     if (status === Status.NOT_LINKED) {
-        return (<Splash address={accountAddress}></Splash>)
+        appComponent = (<Splash address={accountAddress}></Splash>)
     }
     if (status === Status.LINKED) {
-        return (<NotVerified accountAddress={accountAddress}></NotVerified>)
+        appComponent =  (<NotVerified accountAddress={accountAddress}></NotVerified>)
     }
-    return (<BurnerWallet></BurnerWallet>)
+    return (
+        <div id="container">
+            <div id="header">
+                <h2 id="title">DollarForEveryone</h2>
+                <img id="logo" src={SUN_IMAGE} />
+            </div>
+            <div id="app-content">
+                {appComponent}
+            </div>
+        </div>
+            
+        
+    )
 
 }
 
