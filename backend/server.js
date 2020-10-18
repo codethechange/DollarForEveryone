@@ -172,7 +172,6 @@ const sendDollar = async (address) => {
 
   
   console.log("Sending $1 to" + transactionId)
-  throw  "asdf"
   // TODO: Send dollar
 }
 
@@ -188,7 +187,7 @@ app.get("/api/status/:address", async (req, res) => {
           const response = await axios.get(
             BRIGHTID_NODE_URL + '/verifications/' + CONTEXT + '/' + user.contextId
           )
-          if (response.data.unique) { // The user is deemed unique by BrightID
+          if (response.data.data.unique) { // The user is deemed unique by BrightID
             // The context id has newly been verified! Let's update our state about this.
             user.verified = true
             await user.save().exec()
