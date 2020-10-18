@@ -2,12 +2,14 @@ require('dotenv').config({ path: './backend/.env' })
 const express = require('express')
 const app = express()
 const port = 3001
+
+
 const mongoose = require('mongoose')
 const nacl = require('tweetnacl')
 nacl.util = require('tweetnacl-util')
-const sha256 = require('crypto-js/sha256')
 const axios = require('axios')
 const Web3 = require('web3')
+const stringify = require('fast-json-stable-stringify');
 
 const { v4: uuidv4 } = require('uuid');
 const CryptoJS = require('crypto-js')
@@ -97,28 +99,59 @@ app.post('/deep-link/:address',async (req, res) => {
   })
 })
 
-const sponsorUser = async (contextId) => {
-  const message = 'Sponsor' + ',' + CONTEXT + ',' + contextId
-  const msgHash = hash(message)
-  const sk = nacl.util.decodeBase64(process.env.CONTEXT_SK)
-  const sig = nacl.util.encodeBase64(nacl.sign.detached(nacl.util.decodeUTF8(message), sk))
-  // Make sure sig works
-  if (!nacl.sign.detached.verify(
-    nacl.util.decodeUTF8(message), nacl.util.decodeBase64(sig), nacl.util.decodeBase64(process.env.CONTEXT_PK)
-    )) {
-    throw 'Invalid .env Signature Configuration'
+/**
+ * From BrightID for Applications
+ */
+function getMessage(op) {
+  const signedOp = {};
+  for (let k in op) {
+    if (['sig', 'sig1', 'sig2', 'hash'].includes(k)) {
+      continue;
+    }
+    signedOp[k] = op[k];
   }
+  return stringify(signedOp);
+ }
+
+/**
+ * From BrightID for Applications
+ */
+function strToUint8Array(str) {
+  return new Uint8Array(Buffer.from(str, 'ascii'));
+}
+
+/**
+ * From BrightID for Applications
+ */
+function uInt8ArrayToB64(array) {
+  const b = Buffer.from(array);
+  return b.toString('base64');
+}
+
+
+const sponsorUser = async (contextId) => {
+  
+  const sk = nacl.util.decodeBase64(process.env.CONTEXT_SK)
+  
+  // From BrightID for Applications.
+  const timestamp = Date.now()
+  const op = {
+    app: CONTEXT,
+    contextId,
+    name: 'Sponsor',
+    timestamp,
+    v: 5,
+  }
+  const message = getMessage(op)
+  op.sig = uInt8ArrayToB64(
+    Object.values(nacl.sign.detached(strToUint8Array(message), sk))
+  );
+
   try {
-    const response = await axios.post(BRIGHTID_NODE_URL + '/operations', {
-      app: CONTEXT,
-      contextId,
-      name: 'Sponsor',
-      sig,
-      v: 5,
-    })
+    const response = await axios.post(BRIGHTID_NODE_URL + '/operations', op)
     console.log(response)
   } catch(error) {
-    console.log("hi")
+    console.log(JSON.stringify(error.response.data))
   }
   
 }
