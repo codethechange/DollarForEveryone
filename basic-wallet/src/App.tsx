@@ -55,8 +55,7 @@ enum Status {
 function App() {
 
     const [status, setStatus] = useState(Status.NOT_LINKED)
-    // const accountAddress = core.getAccounts()[0]
-    const accountAddress = "0xEc21870902d3870FAb8157016FAeCF0Da600D599"
+    const accountAddress = core.getAccounts()[0]
 
     useEffect(() => {
         fetch(`/api/status/${accountAddress}`).then(res => {
@@ -75,7 +74,7 @@ function App() {
         appComponent = (<Splash address={accountAddress}></Splash>)
     }
     if (status === Status.LINKED) {
-        appComponent =  (<NotVerified accountAddress={accountAddress}></NotVerified>)
+        appComponent =  (<NotVerified></NotVerified>)
     }
     return (
         <div id="container">

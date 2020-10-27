@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 
 function NotVerified () {
 
@@ -9,7 +9,7 @@ function NotVerified () {
                 To become verified, join a <a href="https://www.brightid.org/meet">verification party.</a>
             </p>
             <p>
-                Check back here once you receive a "verified" sticker on BrightID.
+                Check back here once you receive a &quot;verified&quot; sticker on BrightID.
             </p>
         </div>
     )
