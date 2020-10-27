@@ -1,20 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-interface Props {
-    accountAddress: string;
-}
-
-function NotVerified ({accountAddress}: Props) {
-    // useEffect(() => {
-    //     fetch(`/api/status/${accountAddress}`).then(res => res.json())
-    //     .then(res => {
-    //         if (res.status === "LINKED") {
-    //             setStatus(Status.LINKED)
-    //         } else if (res.status === "VERIFIED") {
-    //             setStatus(Status.VERIFIED)
-    //         }
-    //     })
-    // }, [accountAddress])
+function NotVerified () {
 
     return (
         <div className="text">

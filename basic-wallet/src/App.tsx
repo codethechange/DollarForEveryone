@@ -81,7 +81,7 @@ function App() {
         <div id="container">
             <div id="header">
                 <h2 id="title">DollarForEveryone</h2>
-                <img id="logo" src={SUN_IMAGE} />
+                <img id="logo" alt="logo" src={SUN_IMAGE} />
             </div>
             <div id="app-content">
                 {appComponent}

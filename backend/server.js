@@ -170,9 +170,6 @@ const sendDollar = async (address) => {
   const serializedTransaction = transaction.serialize()
   const transactionId = web3.eth.sendRawTransaction('0x' + serializedTransaction.toString('hex'))
 
-  
-  console.log("Sending $1 to" + transactionId)
-  // TODO: Send dollar
 }
 
 app.get("/api/status/:address", async (req, res) => {
@@ -282,6 +279,3 @@ app.listen(port, () => {
   console.log(`Server listening on port ${port}!`)
   printBalance()
 })
-
-
-'child "name" fails because ["name" must be one of [Add Connection]], child "name" fails because ["name" must be one of [Remove Connection]], child "name" fails because ["name" must be one of [Add Group]], child "name" fails because ["name" must be one of [Remove Group]], child "name" fails because ["name" must be one of [Add Membership]], child "name" fails because ["name" must be one of [Remove Membership]], child "name" fails because ["name" must be one of [Set Trusted Connections]], child "name" fails because ["name" must be one of [Set Signing Key]], child "name" fails because ["name" must be one of [Link ContextId]], child "timestamp" fails because ["timestamp" is required], child "name" fails because ["name" must be one of [Invite]], child "name" fails because ["name" must be one of [Dismiss]], child "name" fails because ["name" must be one of [Add Admin]]'
