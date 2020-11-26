@@ -1,6 +1,6 @@
 {
   "name": "@burner-wallet/metamask-plugin",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "UI to enable Metamask or other injected signers",
   "license": "MIT",
   "main": "dist/MetamaskPlugin.js",
@@ -12,9 +12,17 @@
     "build": "tsc",
     "watch": "tsc -w"
   },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/burner-wallet/burner-wallet-2.git",
+    "directory": "packages/metamask-plugin"
+  },
   "dependencies": {
     "@burner-wallet/types": "^1.0.0",
     "@types/react": "*",
-    "styled-components": "^4.4.0"
+    "styled-components": "^5.0.1"
   }
 }

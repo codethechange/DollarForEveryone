@@ -1,11 +1,12 @@
 import { ComponentType } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
+import { Location } from 'history';
 import { Asset } from '@burner-wallet/assets';
 import Web3 from 'web3';
 import { Account, Actions, BurnerContext, SendData } from './types';
 
-interface BasePluginContext {
-  plugin: Plugin;
+interface BasePluginContext<P = Plugin> {
+  plugin: P;
 }
 
 export interface Plugin {
@@ -14,21 +15,24 @@ export interface Plugin {
   initializePlugin(context: BurnerPluginContext): void;
 }
 
-interface PluginActionContext {
+export interface PluginActionContext {
   actions: Actions;
+  location: Location;
 }
 
-export type PluginPageContext<Params = {}> = RouteComponentProps<Params> & BasePluginContext & BurnerContext;
-export type PluginElementContext = BasePluginContext & BurnerContext;
+export type PluginElementContext<P = Plugin> = BasePluginContext<P> & BurnerContext;
+export type PluginPageContext<Params = {}, P = Plugin> =
+  RouteComponentProps<Params> & BasePluginContext<P> & BurnerContext;
 
-export type PluginPage = ComponentType<PluginPageContext<any>>;
-export type PluginElement = ComponentType<PluginElementContext>;
+export type PluginPage = ComponentType<PluginPageContext<any, any>>;
+export type PluginElement = ComponentType<PluginElementContext<any>>;
 
 export type AccountSearchFn = (query: string) => Promise<Account[]>;
 export type AddressToNameResolver = (address: string) => Promise<string | null>;
 export type QRScannedFn = (qr: string, context: PluginActionContext) => boolean | undefined;
 export type TXSentFn = (data: SendData) => string | void | null;
 export type PluginMessageListener = (...message: any[]) => any;
+export type StartupFn = (context: PluginActionContext) => void;
 
 export type Translations = { [lang: string]: { [key: string]: string } };
 
@@ -46,6 +50,7 @@ export interface BurnerPluginContext {
   onSent: (callback: TXSentFn) => void;
   sendPluginMessage: (topic: string, ...message: any[]) => any[];
   onPluginMessage: (topic: string, listener: PluginMessageListener) => void;
+  onStartup: (callback: StartupFn) => void;
 }
 
 interface PluginPageData {
@@ -85,4 +90,5 @@ export interface BurnerPluginData {
   tryHandleQR: (qr: string, context: PluginActionContext) => boolean;
   sent: TXSentFn;
   getAddressName: (address: string) => Promise<string | null>;
+  startup: (context: PluginActionContext) => void;
 }

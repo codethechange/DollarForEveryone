@@ -1,0 +1,33 @@
+{
+  "name": "@burner-wallet/cli",
+  "version": "0.1.1",
+  "description": "Tools for starting a Burner Wallet connected to a local Ganache instance",
+  "license": "MIT",
+  "bin": {
+    "burner": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "bytecode"
+  ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/burner-wallet/burner-wallet-2.git",
+    "directory": "packages/cli"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "string-argv": "^0.3.1",
+    "web3": "^1.2.2",
+    "yargs": "^15.3.1"
+  },
+  "devDependencies": {
+    "@types/yargs": "^15.0.5"
+  }
+}

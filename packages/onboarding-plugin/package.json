@@ -1,12 +1,13 @@
 {
-  "name": "@burner-wallet/exchange",
-  "version": "1.1.4",
+  "name": "@burner-wallet/onboarding-plugin",
+  "version": "0.1.1",
+  "description": "Display a screen on first launch",
   "license": "MIT",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "start-basic": "tsc -w"
+    "start-local": "tsc -w"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
@@ -14,12 +15,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/burner-wallet/burner-wallet-2.git",
-    "directory": "packages/exchange"
+    "directory": "packages/onboarding-plugin"
   },
   "dependencies": {
     "@burner-wallet/types": "^1.0.0",
-    "@types/react": "*",
-    "@types/styled-components": "4.1.8",
+    "@types/react-swipeable-views": "^0.13.0",
+    "react-swipeable-views": "^0.13.9",
     "styled-components": "^5.0.1"
   }
 }

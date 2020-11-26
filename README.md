@@ -40,11 +40,21 @@ const BurnerWallet = () =>
   />
 ```
 
-### Running the wallet
+### Full documentation
+
+Visit https://burner-wallet.readthedocs.io/ for more documentation on using the Burner Wallet libraries.
+
+### Building a Wallet
 
 #### Simple, customized wallet
 
-Do you want to customize your own version of the wallet? Check out the simple application in the `basic-wallet` directory.
+Do you want to customize your own version of the wallet? This repo contains the source files for
+the Burner Wallet 2 libraries, but you don't need to download or fork this to build a Burner Wallet!
+
+Check out [sample-wallet](https://github.com/burner-wallet/sample-wallet) to build a simple,
+customized wallet. If you're interested in building a Burner Wallet plugin, check out the
+[sample-plugin](https://github.com/burner-wallet/sample-plugin) repo.
+
 
 Alternatively, visit https://burnerfactory.com to create your own wallet without writing any code!
 
@@ -88,7 +98,13 @@ const core = new BurnerCore({
 
 Are you a developer, hoping to test changes to other modules in this project (modern-ui, ui-core or various plugins)?
 
-Run `yarn start-local` in the project root. This will start a wallet on localhost:3000 that is connected to your local
+In the project root, run these commands:
+```
+yarn install
+yarn run build
+yarn start-local
+```
+This will start a wallet on http://localhost:3000 that is connected to your local
 Ganache instance (connecting to node http://localhost:8545 by default).
 
 Before the wallet server launches, a script create a pre-filled account. This account will hold 1 Ganache ETH and 100
@@ -139,7 +155,3 @@ The burner-factory-plugins repo also contains a number of other plugins:
 - **[@burner-factory/order-menu-plugin](https://github.com/dmihal/burner-factory-plugins/tree/master/plugins/order-menu-plugin)**: Plugin for ordering predefined menu items. Useful for food/drink events.
 - **[@burner-factory/schedule-plugin](https://github.com/dmihal/burner-factory-plugins/tree/master/plugins/schedule-plugin)**: Displays schedules in the wallet. Useful for events.
 - **[@burner-factory/stock-market-menu-plugin](https://github.com/dmihal/burner-factory-plugins/tree/master/plugins/stock-market-menu-plugin)**: Similar to the order-menu-plugin, this allows users to order pre-defined items off a menu. However, a contract adjusts the price according to supply and demand.
-
-### API Reference
-
-API reference for plugin development is available in the Readme for the [`@burner-wallet/ui-core`](/packages/ui-core) package.

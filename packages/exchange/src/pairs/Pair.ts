@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+import { toWei } from 'web3-utils';
 import Exchange from '../Exchange';
 
 export interface ValueTypes {
@@ -8,6 +8,11 @@ export interface ValueTypes {
 
 export interface ExchangeParams extends ValueTypes {
   account: string;
+}
+
+export interface EstimateReturn {
+  estimate: string;
+  estimateInfo?: null | string;
 }
 
 interface PairConstructor {
@@ -29,8 +34,8 @@ export default abstract class Pair {
   abstract exchangeAtoB({ account, value, ether }: ExchangeParams): Promise<void>;
   abstract exchangeBtoA({ account, value, ether }: ExchangeParams): Promise<void>;
 
-  abstract estimateAtoB(value: ValueTypes): Promise<string>;
-  abstract estimateBtoA(value: ValueTypes): Promise<string>;
+  abstract estimateAtoB(value: ValueTypes): Promise<EstimateReturn>;
+  abstract estimateBtoA(value: ValueTypes): Promise<EstimateReturn>;
 
   setExchange(newExchange: Exchange) {
     this._exchange = newExchange;
@@ -50,7 +55,10 @@ export default abstract class Pair {
     if (value) {
       return value;
     }
-    const web3 = this.getExchange().getWeb3(this.getExchange().getAsset(this.assetA).network);
-    return web3.utils.toWei(ether as string, 'ether');
+    return toWei(ether as string, 'ether');
+  }
+
+  getLoadingMessage(): string {
+    return 'Exchanging assets...'
   }
 }

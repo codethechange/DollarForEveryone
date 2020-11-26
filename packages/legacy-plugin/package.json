@@ -11,10 +11,13 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/burner-wallet/burner-wallet-2.git",
+    "directory": "packages/legacy-plugin"
+  },
   "scripts": {
     "build": "tsc",
-    "start-basic": "tsc -w",
-    "start-local": "tsc -w",
     "test": "TS_NODE_PROJECT=\"tsconfig.testing.json\" mocha -r ts-node/register test/\\*\\*/\\*.spec.ts"
   },
   "dependencies": {

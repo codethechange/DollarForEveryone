@@ -25,7 +25,7 @@ export {
   Plugin, PluginActionContext, PluginPageContext, PluginElementContext, PluginPage, PluginElement,
   PluginElementData, AccountSearchFn, QRScannedFn, TXSentFn, BurnerPluginContext, BurnerPluginData,
   PluginButtonProps, PluginButtonData, AddressToNameResolver, PluginMessageListener, Translations,
-  PluginButtonActions
+  PluginButtonActions, StartupFn
 } from './Plugins';
 
 export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
@@ -70,8 +70,9 @@ export type BurnerComponents = BurnerUIComponents & DataProviders;
 export type HistoryEventCallback = (event: HistoryEvent) => void;
 
 export interface Page {
-  path: string;
+  path: string | string[];
   component: ComponentType<any>;
+  exact?: boolean;
 }
 
 export interface SendData {

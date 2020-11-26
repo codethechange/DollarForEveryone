@@ -1,4 +1,6 @@
-import { createGlobalStyle } from 'styled-components';
+import * as styledComponents from 'styled-components';
+import { BurnerTheme } from './Template';
+const { createGlobalStyle } = styledComponents as styledComponents.ThemedStyledComponentsModule<BurnerTheme>;
 
 const GlobalStyle = createGlobalStyle`
   :root {
@@ -22,16 +24,9 @@ const GlobalStyle = createGlobalStyle`
     --l5-lh: 1.4;
     --l5-weight: 400;
 
-    --main-font: system-ui, "-apple-system", BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-
-    --page-margin: 16px;
-
     --color-primary:  #1AAA9B;
     --color-secondary: #D2F9F5;
     --color-tertiary: #D2F9F5;
-    --color-makergradient: linear-gradient(180deg, rgba(182, 237, 231, 0.38) 0%, rgba(253, 193, 52, 0.15) 100%);
-    --color-makergradientdarker: linear-gradient(180deg, rgba(16, 230, 206, 0.38) 15.63%, rgba(255, 187, 28, 0.25) 100%);
-    --color-makerheadline: #291a42;
 
     --color-nearblack: #291a42;
 
@@ -46,13 +41,13 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    background: #ededed;
+    background: ${props => props.theme.background};
   }
 
   html, body {
     margin: 0;
     padding: 0;
-    font-family: var(--main-font);
+    font-family: ${props => props.theme.font};
     font-smoothing: antialiased;
   }
 
