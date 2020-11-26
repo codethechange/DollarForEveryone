@@ -12,6 +12,10 @@
     justify-content: center;
 }
 
+body {
+    margin: 0;
+}
+
 
 .text{
     font-family: Comfortaa;

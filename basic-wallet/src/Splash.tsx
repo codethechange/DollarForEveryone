@@ -41,7 +41,6 @@ function Splash({ address }: Props) {
         <h2 className = "description">
             Don't have BrightID? Install it on the Play Store/ App Store.
         </h2>
-        {deepLink}
         <button className="button" onClick={() => {window.location.href=deepLink}}>{deepLink ? "Verify with BrightID" : "Loading..."}</button>
     </div>
     )
